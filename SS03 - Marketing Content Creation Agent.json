@@ -27,7 +27,7 @@
         1664,
         192
       ],
-      "id": "223caa08-7f0e-4b86-871b-d2c5a304caa8",
+      "id": "",
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
@@ -388,7 +388,7 @@
         1008,
         544
       ],
-      "id": "189070b2-c0f7-4ab0-ab4a-866860c4768c",
+      "id": "",
       "name": "OpenRouter Chat Model1",
       "credentials": {
         "openRouterApi": {
