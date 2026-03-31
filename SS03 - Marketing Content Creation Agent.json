@@ -1,0 +1,643 @@
+{
+  "name": "SS03 - Marketing Content Creation Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a persuasive long-form content writer tasked with writing a {{ $json['Select Type'] }} targeting the {{ $('On form submission').item.json['Target Audience'] }} audience.\n\nThe article should be exactly {{ $json['Content Style Length'] }} words, written in a {{ $json['Content Style Tone'] }} tone, and using an appropriate {{ $json['Content Style Voice'] }}.\n\nThe main topic is: {{ $json['Primary Topic'] }}, with a primary SEO keyword: {{ $json['Provide a SEO Main Keyword'] }}.\nWhere possible, include this supporting keyword: {{ $json['Provide a SEO Supporting Keyword'] }}.\n\nFocus on the geographic region: {{ $json['Provide a Geographic Focus '] }}.\nIf any competitor or reference links are provided, analyze or refer to them: {{ $json['Competitor or Reference Links'] }}.\n\nBe sure to incorporate the following hashtag(s) where appropriate: #{{ $json.Hashtags }}.\nContent format preference is: {{ $json['Format Preference'] }}.\nIf there are any must-include points, incorporate them clearly: {{ $json['Any Must-Include Points'] }}.\n\nWords to Avoid: Please make sure the article does not include the following words or phrases: {{ $json['Words to Avoid'] || \"\"}}\n\n🧩 Formatting & Structure Instructions:\n\nStart with a compelling title that reflects the topic and SEO keyword\n\nBegin with a strong introduction that hooks the reader and summarizes the article\n\nUse clear subheadings (H2, H3) to divide the article logically\n\nInclude bullet points, numbered lists, or quotes where helpful\n\nUse short paragraphs, bold keywords, and make the article scannable\n\nEnd with a strong conclusion that offers insight, a CTA, or reflection\n\nKeep SEO best practices in mind: use the focus keyword naturally throughout\n\nDo not add a writer bio or meta description — just return the full article content\n\nDo not include an introduction about yourself or explain what you’re doing. Just output the final, well-formatted article.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1664,
+        16
+      ],
+      "id": "8303df16-2adb-4f5d-9e4c-55b5e9d98fe2",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen-vl-plus",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        192
+      ],
+      "id": "223caa08-7f0e-4b86-871b-d2c5a304caa8",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "1MjcKHNlgEl9D68f",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://md2doc.n8n.aemalsayer.com ",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDocsOAuth2Api",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "output",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "name": "=fileName",
+              "value": "={{ $('On form submission').item.json['Primary Topic'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2016,
+        16
+      ],
+      "id": "1594816d-4978-4aeb-a9eb-f5fdbb5b0bf1",
+      "name": "HTTP Request",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "GCPFnM9LGlWIIYQF",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Marketing Content Agent Form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Primary Topic",
+              "placeholder": "Name"
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "Email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Select Type",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Blog"
+                  },
+                  {
+                    "option": "Article"
+                  },
+                  {
+                    "option": "Post"
+                  },
+                  {
+                    "option": "LinkedIn Post"
+                  },
+                  {
+                    "option": "Instagram Caption"
+                  },
+                  {
+                    "option": "witter/X Thread Post"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Target Audience",
+              "placeholder": "Target Audience",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Provide a SEO Main Keyword",
+              "placeholder": "Provide a SEO Main Keyword"
+            },
+            {
+              "fieldLabel": "Provide a SEO Supporting Keyword",
+              "placeholder": "Provide a SEO Supporting Keyword"
+            },
+            {
+              "fieldLabel": "Provide a Geographic Focus ",
+              "placeholder": "Eg: Miami, LA"
+            },
+            {
+              "fieldLabel": "Competitor or Reference Links",
+              "placeholder": "Competitor or Reference Links"
+            },
+            {
+              "fieldLabel": "Content Style Tone",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Professional"
+                  },
+                  {
+                    "option": "Casual"
+                  },
+                  {
+                    "option": "Persuasive"
+                  },
+                  {
+                    "option": "Storytelling"
+                  },
+                  {
+                    "option": "Educational"
+                  },
+                  {
+                    "option": "Friendly"
+                  },
+                  {
+                    "option": "Analytical"
+                  },
+                  {
+                    "option": "Conversational"
+                  },
+                  {
+                    "option": "Urgent"
+                  },
+                  {
+                    "option": "Minimalist"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Content Style Length",
+              "fieldType": "number",
+              "placeholder": "Content Style Length"
+            },
+            {
+              "fieldLabel": "Content Style Voice",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "First Person (I/We)"
+                  },
+                  {
+                    "option": "Third Person (He/She/They)"
+                  },
+                  {
+                    "option": "Hybrid (First Person/Third Person)"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Format Preference",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Listicle"
+                  },
+                  {
+                    "option": " How-to guide"
+                  },
+                  {
+                    "option": "Case study"
+                  },
+                  {
+                    "option": "News update"
+                  },
+                  {
+                    "option": "Comparison"
+                  },
+                  {
+                    "option": "Interview"
+                  },
+                  {
+                    "option": "Opinion"
+                  },
+                  {
+                    "option": "Review"
+                  },
+                  {
+                    "option": "Whitepaper"
+                  },
+                  {
+                    "option": "FAQ"
+                  },
+                  {
+                    "option": "Checklist"
+                  },
+                  {
+                    "option": "Trend Analysis"
+                  },
+                  {
+                    "option": "Roundup"
+                  },
+                  {
+                    "option": "Tutorial"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Any Must-Include Points",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Product name"
+                  },
+                  {
+                    "option": "statistics"
+                  },
+                  {
+                    "option": "special offers"
+                  },
+                  {
+                    "option": "company details"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Hashtags",
+              "placeholder": "Hashtags"
+            },
+            {
+              "fieldLabel": "Words to Avoid",
+              "placeholder": "Words to Avoid"
+            },
+            {
+              "fieldLabel": "Goal",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Book a demo"
+                  },
+                  {
+                    "option": "Visit website"
+                  },
+                  {
+                    "option": "Subscribe"
+                  },
+                  {
+                    "option": "Comment"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        928,
+        32
+      ],
+      "id": "2025480a-c343-4887-9a3c-c01a52a361a7",
+      "name": "On form submission",
+      "webhookId": "5e7aa8da-6f79-4310-abe9-03ee96b3db3d"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "=Creating a  {{ $('On form submission').item.json[\"Select Type\"] }}",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Systemapic Notification</title>\n  <style>\n    body {\n      font-family: Arial, sans-serif;\n      background-color: #f4f4f4;\n      margin: 0;\n      padding: 0;\n    }\n    .container {\n      max-width: 600px;\n      margin: 0 auto;\n      background-color: #ffffff;\n      padding: 25px;\n      border-radius: 8px;\n      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\n    }\n    h2 {\n      color: #333333;\n      font-size: 26px;\n      margin-bottom: 15px;\n      font-weight: bold;\n    }\n    p {\n      font-size: 16px;\n      color: #555555;\n      line-height: 1.7;\n      margin-bottom: 15px;\n    }\n    .cta-button {\n      display: inline-block;\n      background-color: #0066cc;\n      color: #ffffff;\n      padding: 12px 20px;\n      text-decoration: none;\n      border-radius: 5px;\n      font-weight: bold;\n      margin-top: 25px;\n      text-align: center;\n      transition: background-color 0.3s;\n    }\n    .cta-button:hover {\n      background-color: #fff;\n    }\n    footer {\n      font-size: 14px;\n      color: #888888;\n      margin-top: 30px;\n    }\n    .footer-note {\n      color: #999999;\n      font-size: 13px;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <h2>New Content Created for Your Request</h2>\n    <p>Hi,</p>\n    <p>This is to inform you that, as per your request, a new <strong>{{ $('On form submission').item.json['Select Type'] }}</strong> has been created by our system on the requested topic.</p>\n    <p>You can access it using the link below:</p>\n    <a href=\"{{ $('HTTP Request').item.json.url }}\" class=\"cta-button\">Access Article/Post</a>\n    <p>We hope this content meets your expectations. If you have any feedback or need further customization, feel free to get in touch.</p>\n    <p>Thank you for using our service.</p>\n    <footer>\n      <p>Best regards, <br> Systemapic</p>\n      <p class=\"footer-note\">If you no longer wish to receive these notifications, please contact support.</p>\n    </footer>\n  </div>\n</body>\n</html>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2496,
+        16
+      ],
+      "id": "96cd9a35-29b3-44dd-9802-750db69afb24",
+      "name": "Send a message",
+      "webhookId": "d981d230-3d3d-42b1-b60f-8a47bc1f9357",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MeqBOByCdrdCwa3t",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "32e14197-8fbb-4104-9cc5-3e3eec1f4e89",
+              "leftValue": "={{ $json[\"Select Type\"] }}",
+              "rightValue": "Post",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1136,
+        32
+      ],
+      "id": "3985f923-1b4a-4b3f-9b99-19ff3195ccd0",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a persuasive content writer tasked with creating a post targeting the {{ $('On form submission').item.json['Target Audience'] }}.\n\nThe post should be exactly {{ $json['Content Style Length'] }} words, written in a {{ $json['Content Style Tone'] }} tone, and using an appropriate {{ $json['Content Style Voice'] }}.\n\nThe primary topic is: {{ $json['Primary Topic'] }}, and the SEO focus keyword is {{ $json['Provide a SEO Main Keyword'] }}.\nWhere applicable, use the SEO supporting keyword: {{ $json['Provide a SEO Supporting Keyword'] }}.\nKeep the geographic context in mind, focusing on: {{ $json['Provide a Geographic Focus '] }}.\nIf relevant, refer to or take inspiration from the following competitors or sources: {{ $json['Competitor or Reference Links'] }}\n\nMake sure to include this/these hashtag(s): #{{ $json.Hashtags }}.\nThe post format can be: {{ $json['Format Preference'] }}.\nAlso, include any of the following must-include points if provided: {{ $json['Any Must-Include Points'] }}.\n\n🧩 **Formatting Instructions**:\n- Start with an engaging **headline/title**\n- Use **subheadings** to break the post into sections if needed\n- Use **bullet points** or **numbered lists** to highlight key information\n- Make sure the content is scannable and LinkedIn-friendly\n- End with a **call to action (CTA)** relevant to the audience\n- Use clear spacing and structure (not just one big paragraph)\n\nDo not include an introduction about yourself. Just write the final post, clean and polished for LinkedIn with proper formatting and flow.\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1008,
+        320
+      ],
+      "id": "2a196cba-7ba3-4e19-92d2-8fa89e44a769",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        544
+      ],
+      "id": "189070b2-c0f7-4ab0-ab4a-866860c4768c",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "1MjcKHNlgEl9D68f",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://md2doc.n8n.aemalsayer.com ",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDocsOAuth2Api",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "output",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "name": "=fileName",
+              "value": "={{ $('On form submission').item.json['Primary Topic'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1408,
+        336
+      ],
+      "id": "381d8c8e-4eec-49a0-af8d-fe7f3afb00a7",
+      "name": "HTTP Request1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "GCPFnM9LGlWIIYQF",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "=Creating a  {{ $('On form submission').item.json[\"Select Type\"] }}",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Systemapic Notification</title>\n  <style>\n    body {\n      font-family: Arial, sans-serif;\n      background-color: #f4f4f4;\n      margin: 0;\n      padding: 0;\n    }\n    .container {\n      max-width: 600px;\n      margin: 0 auto;\n      background-color: #ffffff;\n      padding: 25px;\n      border-radius: 8px;\n      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\n    }\n    h2 {\n      color: #333333;\n      font-size: 26px;\n      margin-bottom: 15px;\n      font-weight: bold;\n    }\n    p {\n      font-size: 16px;\n      color: #555555;\n      line-height: 1.7;\n      margin-bottom: 15px;\n    }\n    .cta-button {\n      display: inline-block;\n      background-color: #0066cc;\n      color: #ffffff;\n      padding: 12px 20px;\n      text-decoration: none;\n      border-radius: 5px;\n      font-weight: bold;\n      margin-top: 25px;\n      text-align: center;\n      transition: background-color 0.3s;\n    }\n    .cta-button:hover {\n      background-color: #fff;\n    }\n    footer {\n      font-size: 14px;\n      color: #888888;\n      margin-top: 30px;\n    }\n    .footer-note {\n      color: #999999;\n      font-size: 13px;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <h2>New Content Created for Your Request</h2>\n    <p>Hi,</p>\n    <p>This is to inform you that, as per your request, a new <strong>{{ $('On form submission').item.json['Select Type'] }}</strong> has been created by our system on the requested topic.</p>\n    <p>You can access it using the link below:</p>\n    <a href=\"{{ $json.url }}\" class=\"cta-button\">Access Article/Post</a>\n    <p>We hope this content meets your expectations. If you have any feedback or need further customization, feel free to get in touch.</p>\n    <p>Thank you for using our service.</p>\n    <footer>\n      <p>Best regards, <br> Systemapic</p>\n      <p class=\"footer-note\">If you no longer wish to receive these notifications, please contact support.</p>\n    </footer>\n  </div>\n</body>\n</html>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1856,
+        480
+      ],
+      "id": "f3ce62ad-a71b-4011-ba4c-15deb1baa68e",
+      "name": "Send a message1",
+      "webhookId": "d981d230-3d3d-42b1-b60f-8a47bc1f9357",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MeqBOByCdrdCwa3t",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.googleapis.com/drive/v3/files/{{ $json.documentId }}/permissions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDocsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"role\": \"reader\",\n  \"type\": \"anyone\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2256,
+        16
+      ],
+      "id": "2372a1a6-339f-4b93-9a2f-4e9e3b09781e",
+      "name": "HTTP Request2",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "GCPFnM9LGlWIIYQF",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.googleapis.com/drive/v3/files/{{ $json.documentId }}/permissions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDocsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"role\": \"reader\",\n  \"type\": \"anyone\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1664,
+        480
+      ],
+      "id": "159b7333-30d0-48d0-aea7-947479c3529f",
+      "name": "HTTP Request3",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "GCPFnM9LGlWIIYQF",
+          "name": "Google Docs account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c9e19337-609b-44b8-b565-3ccfb01baf83",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6c4c446d5304742a3c3b35610a91a9314f8fa6e78abf59256949d198dc0f9226"
+  },
+  "id": "r5B4bUsaVHNko7c8",
+  "tags": []
+}
